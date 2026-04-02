@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CodexAudit",
+  "type": "object",
+  "properties": {
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS", "REWORK", "FAIL"],
+      "description": "Audit verdict"
+    },
+    "requirement_coverage": {
+      "type": "object",
+      "description": "Coverage of requirements"
+    },
+    "changed_files_review": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Review of changed files"
+    },
+    "test_result_review": {
+      "type": "object",
+      "description": "Review of test results"
+    },
+    "sim_result_review": {
+      "type": "object",
+      "description": "Review of simulation results"
+    },
+    "remaining_risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Remaining risks"
+    },
+    "next_action_for_claude": {
+      "type": "string",
+      "description": "Next action for Claude if rework needed"
+    },
+    "summary_for_user": {
+      "type": "string",
+      "description": "Summary for the user"
+    }
+  },
+  "required": [
+    "verdict",
+    "requirement_coverage",
+    "changed_files_review",
+    "test_result_review",
+    "sim_result_review",
+    "remaining_risks",
+    "next_action_for_claude",
+    "summary_for_user"
+  ]
+}</content>
+<parameter name="filePath">/home/robros0/Desktop/tools/robot_orchestrator/schemas/codex_audit.schema.json

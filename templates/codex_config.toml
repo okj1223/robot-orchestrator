@@ -1,0 +1,24 @@
+# codex_config.toml - Configuration for Codex CLI
+
+[core]
+model = "o4-mini"
+temperature = 0.1
+max_tokens = 4000
+
+[output]
+format = "json"
+structured = true
+
+[robot_project]
+ros_distro = "humble"
+focus_areas = ["navigation", "manipulation", "perception", "control"]
+
+[rules]
+enforce_json_schema = true
+validate_plan_structure = true
+require_acceptance_criteria = true
+
+[logging]
+level = "info"
+include_timestamps = true</content>
+<parameter name="filePath">/home/robros0/Desktop/tools/robot_orchestrator/templates/codex_config.toml

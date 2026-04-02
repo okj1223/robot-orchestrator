@@ -1,0 +1,36 @@
+name: manipulator
+description: ROS2 Manipulator profile for robotic arms
+
+# ROS2 specific settings
+ros_distro: humble
+workspace_type: colcon
+
+# Build settings
+build_system: colcon
+build_command: colcon build --packages-select {packages}
+test_command: colcon test --packages-select {packages}
+
+# Simulation settings
+sim_type: gazebo
+sim_timeout: 180
+sim_command: ros2 launch {package} {launch_file}
+
+# Validation settings
+validators:
+  - build
+  - test
+  - sim_smoke
+
+# Common packages
+common_packages:
+  - moveit2
+  - moveit_msgs
+  - robot_state_publisher
+  - joint_state_publisher
+  - xacro
+
+# File patterns
+launch_files: "*.launch.py"
+config_files: "*.yaml,*.yml"
+urdf_files: "*.urdf,*.xacro"</content>
+<parameter name="filePath">/home/robros0/Desktop/tools/robot_orchestrator/profiles/manipulator.yaml

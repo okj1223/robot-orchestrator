@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CodexPlan",
+  "type": "object",
+  "properties": {
+    "task_summary": {
+      "type": "string",
+      "description": "Brief summary of the task"
+    },
+    "task_type": {
+      "type": "string",
+      "enum": ["analysis", "code", "code_and_sim"],
+      "description": "Type of task"
+    },
+    "target_packages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "ROS2 packages to target"
+    },
+    "files_to_touch": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Files that will be modified"
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Constraints to follow"
+    },
+    "risk_points": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Potential risks"
+    },
+    "execution_prompt_for_claude": {
+      "type": "string",
+      "description": "Prompt for Claude Code execution"
+    },
+    "validation_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Steps to validate the changes"
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Criteria for acceptance"
+    },
+    "retry_if_failed": {
+      "type": "boolean",
+      "description": "Whether to retry if validation fails"
+    }
+  },
+  "required": [
+    "task_summary",
+    "task_type",
+    "target_packages",
+    "files_to_touch",
+    "constraints",
+    "risk_points",
+    "execution_prompt_for_claude",
+    "validation_steps",
+    "acceptance_criteria"
+  ]
+}</content>
+<parameter name="filePath">/home/robros0/Desktop/tools/robot_orchestrator/schemas/codex_plan.schema.json

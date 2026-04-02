@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod +x /home/robros0/Desktop/tools/robot_orchestrator/validators/*.sh)",
+      "Bash(python -m pytest tests/test_orchestrator.py -v)",
+      "Bash(python3 -m pytest tests/test_orchestrator.py -v)",
+      "Bash(python3 -m unittest tests.test_orchestrator -v)",
+      "Bash(python3 cli.py submit --task \"Fix nav2 lifecycle node activation order in navigation.launch.py\" --profile ros2_nav)"
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+name: ros2_nav
+description: ROS2 Navigation Stack profile for autonomous mobile robots
+
+# ROS2 specific settings
+ros_distro: humble
+workspace_type: colcon
+
+# Build settings
+build_system: colcon
+build_command: colcon build --packages-select {packages}
+test_command: colcon test --packages-select {packages}
+
+# Simulation settings
+sim_type: gazebo
+sim_timeout: 120
+sim_command: ros2 launch {package} {launch_file}
+
+# Validation settings
+validators:
+  - build
+  - test
+  - sim_smoke
+
+# Common packages
+common_packages:
+  - nav2_bringup
+  - nav2_core
+  - nav2_msgs
+  - robot_localization
+  - slam_toolbox
+
+# File patterns
+launch_files: "*.launch.py"
+config_files: "*.yaml,*.yml"
+param_files: "*.yaml"</content>
+<parameter name="filePath">/home/robros0/Desktop/tools/robot_orchestrator/profiles/ros2_nav.yaml
