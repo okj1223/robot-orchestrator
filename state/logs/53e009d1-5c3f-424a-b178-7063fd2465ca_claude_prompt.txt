@@ -1,0 +1,33 @@
+# Robot Orchestrator Job: 53e009d1-5c3f-424a-b178-7063fd2465ca
+
+## Task Summary
+Add an inline comment to config.py on the BASE_DIR line clarifying that it points to the repository root.
+
+## Execution Instructions
+Edit config.py and add a concise inline comment on the BASE_DIR line stating that BASE_DIR is the repository root. Make no other changes.
+
+## Files to Modify
+- config.py
+
+## Constraints (DO NOT violate)
+- Modify only the BASE_DIR line comment in config.py.
+- Keep the change non-functional and limited to documentation/comment text.
+- Preserve existing formatting and Python style.
+- Do not change ROS2 package, build, test, or simulation configuration.
+
+## Workspace
+/home/okj/robot-orchestrator
+
+## Validation Steps (for reference)
+- Locate the correct config.py in the workspace.
+- Verify the BASE_DIR assignment now includes a comment indicating it is the repo root.
+- Confirm no functional code changed and the diff is limited to the intended comment.
+
+## Acceptance Criteria
+- config.py contains a comment on the BASE_DIR line explaining it is the repository root.
+- The change does not alter runtime behavior.
+- Only the intended file and line are modified.
+
+---
+Make ONLY the changes described above. Do not refactor unrelated code.
+After changes, output a brief summary of what was modified.

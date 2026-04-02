@@ -1,0 +1,37 @@
+# Robot Orchestrator Job: 7f4b95d1-84f6-43d7-9c8c-2ba031d2477b
+
+## Task Summary
+Read `docs/reference/project_constants.md` in QuadPorter and verify the documented leg link constants. Current values are `L1 = 160 mm` and `L2 = 180 mm`, which match the expected values.
+
+## Execution Instructions
+Open `~/QuadPorter/docs/reference/project_constants.md`, inspect the Mechanical constants table, and verify whether `L1 (thigh)` is `160 mm` and `L2 (shank)` is `180 mm`. Report the current values found in the file and whether they match the expected values. Do not edit any files.
+
+## Files to Modify
+
+
+## Constraints (DO NOT violate)
+- Do not modify any files.
+- Use `~/QuadPorter/docs/reference/project_constants.md` as the source of truth for this check.
+- Report the current documented values exactly as written.
+- Keep the result scoped to verification of L1 and L2 only.
+
+## Workspace
+/home/okj/robot-orchestrator
+
+## Validation Steps (for reference)
+- Open `docs/reference/project_constants.md` in `~/QuadPorter`.
+- Locate the Mechanical section.
+- Read the entries for `L1 (thigh)` and `L2 (shank)`.
+- Confirm that `L1` is `160 mm` and `L2` is `180 mm`.
+- Report the observed values and match status.
+
+## Acceptance Criteria
+- The analysis references `~/QuadPorter/docs/reference/project_constants.md`.
+- The reported current value for `L1` is `160 mm`.
+- The reported current value for `L2` is `180 mm`.
+- The result clearly states that both values match the expected constants.
+- No files are modified.
+
+---
+Make ONLY the changes described above. Do not refactor unrelated code.
+After changes, output a brief summary of what was modified.

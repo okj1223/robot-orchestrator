@@ -1,0 +1,20 @@
+# Robot Orchestrator Rework Request (attempt #1)
+
+## Original Task
+Read QuadPorter design constants and confirm the locked leg link lengths are L1=160 mm and L2=180 mm.
+
+## Audit Feedback - MUST FIX
+Re-run the task exactly in /home/okj/QuadPorter: open docs/reference/project_constants.md, read the Mechanical table, and return a brief confirmation that it states L1 (thigh) = 160 mm and L2 (shank) = 180 mm. Do not run build, test, or simulation steps, and record the direct file-based confirmation in the output.
+
+## Original Constraints (still apply)
+- Do not modify any files; this is a read-only verification task.
+- Use docs/reference/project_constants.md as the source of truth for locked design values.
+- Confirm values exactly as documented: L1 (thigh)=160 mm, L2 (shank)=180 mm.
+- Keep package/build/sim steps out of scope because no code change is requested.
+
+## Original Files in Scope
+
+
+---
+Apply ONLY the fixes described in the audit feedback.
+Output a brief summary of changes made.

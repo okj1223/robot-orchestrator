@@ -1,0 +1,7 @@
+{
+  "job_id": "7f4b95d1-84f6-43d7-9c8c-2ba031d2477b",
+  "validator": "build",
+  "status": "SKIP",
+  "message": "Not a ROS2 workspace (no src/ and no package.xml). Build skipped.",
+  "log": "/home/okj/robot-orchestrator/state/logs/7f4b95d1-84f6-43d7-9c8c-2ba031d2477b_build.log"
+}

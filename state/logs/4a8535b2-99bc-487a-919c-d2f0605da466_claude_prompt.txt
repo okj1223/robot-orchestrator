@@ -1,0 +1,36 @@
+# Robot Orchestrator Job: 4a8535b2-99bc-487a-919c-d2f0605da466
+
+## Task Summary
+Read QuadPorter design constants and confirm the locked leg link lengths are L1=160 mm and L2=180 mm.
+
+## Execution Instructions
+In ~/QuadPorter, open docs/reference/project_constants.md and verify the Mechanical table. Confirm whether it states L1 (thigh) = 160 mm and L2 (shank) = 180 mm. Do not edit anything; return a brief confirmation with the exact values found.
+
+## Files to Modify
+
+
+## Constraints (DO NOT violate)
+- Do not modify any files; this is a read-only verification task.
+- Use docs/reference/project_constants.md as the source of truth for locked design values.
+- Confirm values exactly as documented: L1 (thigh)=160 mm, L2 (shank)=180 mm.
+- Keep package/build/sim steps out of scope because no code change is requested.
+
+## Workspace
+/home/okj/.openclaw/workspace
+
+## Validation Steps (for reference)
+- Open ~/QuadPorter/docs/reference/project_constants.md.
+- Locate the Mechanical constants table.
+- Verify that the table lists L1 (thigh) as 160 mm.
+- Verify that the table lists L2 (shank) as 180 mm.
+- Return the confirmation result without making any file changes.
+
+## Acceptance Criteria
+- The referenced file has been checked directly.
+- The result explicitly confirms L1 (thigh)=160 mm.
+- The result explicitly confirms L2 (shank)=180 mm.
+- No files were modified.
+
+---
+Make ONLY the changes described above. Do not refactor unrelated code.
+After changes, output a brief summary of what was modified.

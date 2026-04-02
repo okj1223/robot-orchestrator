@@ -1,0 +1,8 @@
+{
+  "job_id": "4a8535b2-99bc-487a-919c-d2f0605da466",
+  "validator": "sim_smoke",
+  "status": "SKIP",
+  "message": "No src/ directory - not a ROS2 workspace. Sim smoke skipped.",
+  "launch_tested": "",
+  "log": "/home/okj/robot-orchestrator/state/logs/4a8535b2-99bc-487a-919c-d2f0605da466_sim_smoke.log"
+}

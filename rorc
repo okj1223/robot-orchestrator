@@ -9,7 +9,7 @@
 
 set -euo pipefail
 
-RORC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RORC_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 PYTHON="${PYTHON:-python3}"
 CLI="$RORC_DIR/cli.py"
 
@@ -36,7 +36,7 @@ cmd_submit() {
     [[ -n "$workspace" ]] && args+=("--workspace" "$workspace")
 
     local raw
-    raw=$("$PYTHON" "$CLI" submit "${args[@]}" 2>/dev/null) || _die "submit failed"
+    raw=$("$PYTHON" "$CLI" submit "${args[@]}" 2>&1) || _die "submit failed"
 
     # cli.py outputs human text; extract job-id from "Job submitted: <id>" line
     local job_id

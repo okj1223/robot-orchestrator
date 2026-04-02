@@ -1,0 +1,7 @@
+{
+  "job_id": "4a8535b2-99bc-487a-919c-d2f0605da466",
+  "validator": "test",
+  "status": "SKIP",
+  "message": "Not a ROS2 workspace. Tests skipped.",
+  "log": "/home/okj/robot-orchestrator/state/logs/4a8535b2-99bc-487a-919c-d2f0605da466_test.log"
+}
