@@ -1,0 +1,189 @@
+#!/usr/bin/env bash
+# rorc - Robot Orchestrator wrapper for Porter (OpenClaw)
+# Usage:
+#   rorc submit '태스크 설명' [--profile PROFILE] [--workspace PATH]
+#   rorc run <job-id>
+#   rorc auto '태스크 설명' [--profile PROFILE] [--workspace PATH] [--learn]
+#   rorc list
+#   rorc show <job-id>
+
+set -euo pipefail
+
+RORC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PYTHON="${PYTHON:-python3}"
+CLI="$RORC_DIR/cli.py"
+
+_die() { echo "{\"error\": \"$*\"}" >&2; exit 1; }
+
+# ── submit ────────────────────────────────────────────────────────────────────
+cmd_submit() {
+    local task=""
+    local profile="ros2_nav"
+    local workspace=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --profile)   profile="$2"; shift 2 ;;
+            --workspace) workspace="$2"; shift 2 ;;
+            --*)         _die "Unknown option: $1" ;;
+            *)           task="$1"; shift ;;
+        esac
+    done
+
+    [[ -n "$task" ]] || _die "Task description required: rorc submit 'task'"
+
+    local args=("--task" "$task" "--profile" "$profile")
+    [[ -n "$workspace" ]] && args+=("--workspace" "$workspace")
+
+    local raw
+    raw=$("$PYTHON" "$CLI" submit "${args[@]}" 2>/dev/null) || _die "submit failed"
+
+    # cli.py outputs human text; extract job-id from "Job submitted: <id>" line
+    local job_id
+    job_id=$(echo "$raw" | grep -oP 'Job submitted: \K[a-f0-9-]+' || true)
+    [[ -n "$job_id" ]] || _die "Could not parse job_id from output: $raw"
+
+    printf '{"job_id": "%s", "status": "RECEIVED", "profile": "%s"}\n' \
+        "$job_id" "$profile"
+}
+
+# ── run ───────────────────────────────────────────────────────────────────────
+cmd_run() {
+    local job_id="${1:-}"
+    [[ -n "$job_id" ]] || _die "job-id required: rorc run <job-id>"
+
+    # Run (exit code 0 = success, 1 = failure — both are valid completions)
+    "$PYTHON" "$CLI" run --job-id "$job_id" >/dev/null 2>&1 || true
+
+    # Return full JSON via show --json
+    local json_block
+    json_block=$("$PYTHON" "$CLI" show --job-id "$job_id" --json 2>/dev/null \
+        | awk '/^--- JSON ---/{found=1; next} found{print}') || _die "show failed"
+
+    [[ -n "$json_block" ]] || _die "No JSON output from show"
+    echo "$json_block"
+}
+
+# ── auto ──────────────────────────────────────────────────────────────────────
+cmd_auto() {
+    local task=""
+    local profile="ros2_nav"
+    local workspace=""
+    local learn=false
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --profile)   profile="$2"; shift 2 ;;
+            --workspace) workspace="$2"; shift 2 ;;
+            --learn)     learn=true; shift ;;
+            --*)         _die "Unknown option: $1" ;;
+            *)           task="$1"; shift ;;
+        esac
+    done
+
+    [[ -n "$task" ]] || _die "Task description required: rorc auto 'task'"
+
+    # Step 1: submit
+    local submit_args=("$task" "--profile" "$profile")
+    [[ -n "$workspace" ]] && submit_args+=("--workspace" "$workspace")
+
+    local submit_json
+    submit_json=$(cmd_submit "${submit_args[@]}") || exit 1
+    local job_id
+    job_id=$(echo "$submit_json" | grep -oP '"job_id":\s*"\K[^"]+')
+    [[ -n "$job_id" ]] || _die "submit returned no job_id"
+
+    # Step 2: run and return result JSON
+    local result
+    result=$(cmd_run "$job_id") || exit 1
+    echo "$result"
+
+    # Step 3: optional auto-learn
+    if $learn; then
+        "$PYTHON" "$RORC_DIR/auto_learn.py" --job-id "$job_id" 2>/dev/null || \
+            echo '{"learn": "skipped", "reason": "auto_learn.py error"}' >&2
+    fi
+}
+
+# ── list ──────────────────────────────────────────────────────────────────────
+cmd_list() {
+    local status_filter="${1:-}"
+    local raw
+
+    if [[ -n "$status_filter" ]]; then
+        raw=$("$PYTHON" "$CLI" list --status "$status_filter" 2>/dev/null) || _die "list failed"
+    else
+        raw=$("$PYTHON" "$CLI" list 2>/dev/null) || _die "list failed"
+    fi
+
+    # Parse table output into JSON array
+    # Header line: JOB ID  STATUS  RETRIES  TASK
+    local jobs_json="[]"
+    jobs_json=$(echo "$raw" | awk '
+        /^[0-9a-f-]{36}/ {
+            job_id = $1
+            status = $2
+            retries = $3
+            task = ""
+            for (i=4; i<=NF; i++) task = task (i>4?" ":"") $i
+            gsub(/"/, "\\\"", task)
+            printf "{\"job_id\":\"%s\",\"status\":\"%s\",\"retries\":\"%s\",\"task\":\"%s\"},\n",
+                job_id, status, retries, task
+        }
+    ' | sed 's/,$//' | awk 'BEGIN{print "["} {print} END{print "]"}')
+
+    echo "$jobs_json"
+}
+
+# ── show ──────────────────────────────────────────────────────────────────────
+cmd_show() {
+    local job_id="${1:-}"
+    [[ -n "$job_id" ]] || _die "job-id required: rorc show <job-id>"
+
+    local json_block
+    json_block=$("$PYTHON" "$CLI" show --job-id "$job_id" --json 2>/dev/null \
+        | awk '/^--- JSON ---/{found=1; next} found{print}') || _die "show failed"
+
+    [[ -n "$json_block" ]] || _die "No JSON output"
+    echo "$json_block"
+}
+
+# ── dispatch ──────────────────────────────────────────────────────────────────
+COMMAND="${1:-}"
+shift || true
+
+case "$COMMAND" in
+    submit) cmd_submit "$@" ;;
+    run)    cmd_run "$@" ;;
+    auto)   cmd_auto "$@" ;;
+    list)   cmd_list "$@" ;;
+    show)   cmd_show "$@" ;;
+    ""|--help|-h)
+        cat <<'EOF'
+rorc - Robot Orchestrator CLI wrapper (JSON output)
+
+Commands:
+  rorc submit '<task>' [--profile PROFILE] [--workspace PATH]
+        Submit a job and return {"job_id": "...", "status": "RECEIVED"}
+
+  rorc run <job-id>
+        Execute a submitted job; return full result JSON
+
+  rorc auto '<task>' [--profile PROFILE] [--workspace PATH] [--learn]
+        submit + run in one shot; --learn also runs auto_learn.py
+
+  rorc list [STATUS]
+        List jobs as JSON array; optional STATUS filter (e.g. FAILED)
+
+  rorc show <job-id>
+        Show full job detail as JSON
+
+Examples:
+  rorc auto 'Fix nav2 lifecycle order' --profile ros2_nav
+  rorc auto 'Tune PID gains' --learn
+  rorc list FAILED
+  rorc show abc123
+EOF
+        ;;
+    *) _die "Unknown command: $COMMAND  (try rorc --help)" ;;
+esac
