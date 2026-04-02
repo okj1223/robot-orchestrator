@@ -75,7 +75,7 @@ class CodexAdapter:
     def __init__(
         self,
         codex_cmd: str = "codex",
-        model: str = "o4-mini",
+        model: str = "",
         timeout: int = 300,
         mock_mode: bool = False,
     ):
@@ -197,28 +197,47 @@ Required fields:
     # ------------------------------------------------------------------
 
     def _call_codex(self, prompt: str) -> str:
-        """Write prompt to temp file and call codex CLI."""
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, encoding="utf-8") as f:
-            f.write(prompt)
-            prompt_file = f.name
+        """Call codex CLI non-interactively via `codex exec`.
+
+        Passes the prompt on stdin and reads the last agent message from
+        a temp output file (-o flag).  The --ephemeral flag prevents the
+        session from being persisted to disk.
+        """
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix="_out.txt", delete=False, encoding="utf-8"
+        ) as f:
+            out_file = f.name
 
         try:
-            cmd = [self.codex_cmd, "--model", self.model, "--quiet", f"@{prompt_file}"]
-            logger.info(f"Calling Codex: {' '.join(cmd)}")
+            # `codex exec [--model M] --ephemeral -o outfile -`
+            # reads prompt from stdin ("-"), writes last message to out_file
+            cmd = [self.codex_cmd, "exec", "--ephemeral", "-o", out_file]
+            if self.model:
+                cmd += ["--model", self.model]
+            cmd.append("-")  # read from stdin
+
+            logger.info(f"Calling Codex: {' '.join(cmd[:-1])} -")
             result = subprocess.run(
                 cmd,
+                input=prompt,
                 capture_output=True,
                 text=True,
                 timeout=self.timeout,
                 env={**os.environ},
             )
-            if result.returncode != 0:
+
+            output = Path(out_file).read_text(encoding="utf-8").strip() if Path(out_file).exists() else ""
+            if not output:
+                # Fall back to stdout if -o produced nothing (older versions)
+                output = result.stdout.strip()
+
+            if result.returncode != 0 and not output:
                 raise RuntimeError(
                     f"Codex exited {result.returncode}: {result.stderr[:500]}"
                 )
-            return result.stdout
+            return output
         finally:
-            Path(prompt_file).unlink(missing_ok=True)
+            Path(out_file).unlink(missing_ok=True)
 
     # ------------------------------------------------------------------
     # Parsers

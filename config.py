@@ -41,7 +41,8 @@ class OrchestratorConfig:
 
     # Codex CLI settings
     codex_cmd: str = field(default_factory=lambda: os.environ.get("CODEX_CMD", "codex"))
-    codex_model: str = field(default_factory=lambda: os.environ.get("CODEX_MODEL", "o4-mini"))
+    # Empty string = use codex's own config (~/.codex/config.toml model field)
+    codex_model: str = field(default_factory=lambda: os.environ.get("CODEX_MODEL", ""))
 
     # Claude Code CLI settings
     claude_cmd: str = field(default_factory=lambda: os.environ.get("CLAUDE_CMD", "claude"))
